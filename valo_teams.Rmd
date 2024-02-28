@@ -1,0 +1,72 @@
+---
+title: "Creating the Highest Skilled Valorant Team"
+author: "Kelly Ng"
+date: "2024-02-28"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(message = FALSE)
+```
+
+```{r}
+library(tidyverse)
+library(lpSolve)
+```
+
+```{r}
+data <- modelling_project3data <- read_csv("modelling_project3data.csv")
+```
+
+### Define objective function coefficients
+```{r}
+objective_function_coefficients <- c(data$ACS * 0.5 + data$KDR * 0.3 + data$clutch_rate * 0.2)
+```
+
+### Number of players
+```{r}
+n <- nrow(data)
+n
+```
+
+### Constraints matrix (A)
+Row 1: Sum of all players' binary variables should be equal to 5
+Row 2: Sum of all Japanese players' binary variables should be at least 3
+Row 3-6: At least 1 player for every position (Initiator, Duelist, Sentinel, Controller)
+```{r}
+A <- rbind(
+  rep(1, n),
+  as.integer(data$nationality == "Japanese"),
+  as.integer(data$position == "initiator"),
+  as.integer(data$position == "duelist"),
+  as.integer(data$position == "sentinel"),
+  as.integer(data$position == "controller")
+)
+
+# Constraints directions
+dir <- c("==", ">=", ">=", ">=", ">=", ">=")
+
+# Right-hand side (rhs) values
+rhs <- c(5, 3, 1, 1, 1, 1)
+```
+
+### Solve the linear program
+```{r}
+result <- lp(direction = "max", objective.in = objective_function_coefficients, const.mat = A, const.dir = dir, const.rhs = rhs, all.bin = TRUE)
+```
+
+### Check if the solution is optimal
+```{r}
+if (result$status == 0) {
+  # Get the binary variables indicating the selected players
+  selected_players <- result$solution
+  
+  # Extract the player IDs of the selected players
+  selected_player_ids <- data$player_ID[selected_players == 1]
+  
+  # Display the selected player IDs
+  print(selected_player_ids)
+} else {
+  cat("No optimal solution found.")
+}
+```
