@@ -58,3 +58,70 @@ After collecting all the data, it has been recorded in an Excel spreadsheet as s
 <p align="center">
   <img src="https://github.com/kellyngsf/valo_teams/blob/main/images/data_snapshot.png" width=450>
 </p>
+
+## Analysis 
+After collecting the data, the package “lpSolve” in R was used to analyse the data set. Firstly, the objective function was defined with the relative weights as discussed earlier. 
+```
+objective_function_coefficients <- c(data$ACS * 0.5 + data$KDR * 0.3 + data$clutch_rate * 0.2)
+```
+
+The constraints are dfeined by coding a constraints matrix as follows,
+```
+A <- rbind(
+  rep(1, n),
+  as.integer(data$nationality == "Japanese"),
+  as.integer(data$position == "initiator"),
+  as.integer(data$position == "duelist"),
+  as.integer(data$position == "sentinel"),
+  as.integer(data$position == "controller")
+)
+
+# Constraints directions
+dir <- c("==", ">=", ">=", ">=", ">=", ">=")
+
+# Right-hand side (rhs) values
+rhs <- c(5, 3, 1, 1, 1, 1)
+```
+The first row of the constraint matrix A is to ensure the sum of all the players’ binary variables is equal to 5 (i.e., 5 players on a team). The second row guarantees that the sum of all the players’ nationalities is so that there are at least 3 players of Japanese nationality. Finally, rows 3-6 are defined to have at least 1 player for every role. The constraints’ sign directions and values on the right-hand side of the constraint equations for each constraint are then defined through `dir` and `rhs`. 
+
+The `lp()` function will then be used to solve the MILP problem:
+```
+result <- lp(direction = "max", objective.in = objective_function_coefficients, const.mat = A, const.dir = dir, const.rhs = rhs, all.bin = TRUE)
+```
+Finally, an if-statement will be used to check if the solution is optimal; if not optimal, the function will output “No optimal solution found”, otherwise, the players’ ID/names will be extracted and outputted. 
+```
+if (result$status == 0) {
+  # Get the binary variables indicating the selected players
+  selected_players <- result$solution
+  
+  # Extract the player IDs of the selected players
+  selected_player_ids <- data$player_ID[selected_players == 1]
+  
+  # Display the selected player IDs
+  print(selected_player_ids)
+} else {
+  cat("No optimal solution found.")
+}
+```
+
+## Results 
+From the previous code chunks, the resulting team has been outputted as follows,
+![](https://github.com/kellyngsf/valo_teams/blob/main/images/final_result.png)
+
+Out of the 5 players chosen, 3 (Meiy, Popogachi, Medusa) are from the team that placed second in the tournament, and 2 are from the team that placed first (Syouta, CLZ). Furthermore, even though one of the constraints was to have at least 3 Japanese players, the solution to the MILP has 4 Japanese players, the only Korean player being Medusa. 
+
+The roles that are present in this team are 2 duelists (Meiy and CLZ) and 1 for each other role (Popogachi: initiator, Medusa: sentinel, Syouta: controller). This means that the last role was chosen to be for a duelist, which results primarily from CLZ’s high ACS of 239.6, which is the second highest after Meiy (246.7). Another observation from these 5 chosen players is that all players are among the top 5 with the highest ACS. However, only 2 of them are within the top 5 highest clutch rate players, the highest being Medusa. Finally, all players except for Popogachi are within the top 5 for the highest KDR. This is unsurprising as the observation function was defined to place the most emphasis on ACS, as it is the most looked-at metric in the professional Valorant scene to determine how well a player performed. 
+
+## Limitations and Evaluations 
+The MILP has successfully outputted a team that has the highest skill levels based on ACS, KDR, and clutch rate, however, there are also a few limitations of this method for this problem. 
+
+One of the biggest limitations is that linear programming in general is unable to consider factors that are unmeasurable in numbers. For this project, we are unable to account for an important intangible factor, which is team chemistry and the level of communication between players. This is because it isn’t a metric that can be quantified numerically. Although all players know each other and are friends with one another, team chemistry and chemistry between players in-game are often unknowable until they are properly put together in a team, have practised together, and experienced pressures in tournaments together. Hence, although team chemistry is a crucial factor to determine the overall skill level of a team, it is intangible and unable to be considered in the MILP. 
+
+Similar to the previous limitation, the level of Japanese communication the Korean players have can affect the quality of teamwork a team may have. This is why it was assumed the two Korean players have the same level of Japanese communication, however, the fact that this is an intangible and an unmeasurable variable, places the solution to this MILP at a slight disadvantage on how high levelled a team will be. 
+
+These two limitations could be improved by creating and calculating a metric that represents how well players get along with each other. For example, if players have played with each other before on the same team, or just for fun, we could have a high chemistry rating between those two players. Consequently, if two players have not interacted with each other, we could say that the chemistry level between them is lower. Additionally, we can measure the non-Japanese player’s Japanese level by how fluent they are in interviews or from feedback from their teammates. However, this rating may be slightly subjective because it will be based only on media that I have seen, not a statistic calculated from a standard formula or from the game itself. 
+
+## Extensions 
+A possible extension of this project would be to factor in the budget or cost of hiring the players. This can either be an objective function that has to be minimized or be one of the constraints, where we allocate a maximum amount of money to hire players. However, this will only be possible if the data is available for each player. This can be an interesting extension because so far, we have only considered variables to do with skills or constraints to obey tournament rules, therefore, it may be interesting to consider budget limitations. 
+
+Another extension that can be part of a larger project would be to answer the problem of if we have all 10 players from the top 2 teams available, which players would we choose for every map in the game? As mentioned in the assumptions, team compositions may change depending on the map, team match-up, or meta. To combat this, we can research more into the current meta of Valorant and see what are the most common team compositions for a specific map. More specifically, which 5 characters/agents are used in the current meta? Valorant has 4 unique roles, and within each role, there are a wide variety of characters that have the same role title but different skills and ultimates. Then, we can calculate the statistics of all players and every character they have played, not just consider data based on the role they specialize in. Then, we can use a similar objective function to calculate which players are chosen for the highest-skilled team, depending on how well they can play a certain character. For example, if a player produces a high skill level in the duelist role, but another player may perform better on a certain character (that is a duelist), the latter player may be chosen to play, instead of the former one because of their extreme specialization of a specific character. 
