@@ -14,3 +14,23 @@ The objective function will be written as follows:
 ```math
 z = 0.5 * ACS + 0.3 * KDR + 0.2 * clutch rate
 ```
+Different weights will be assigned to each metric. ACS stands for Average Combat Score and it measures a player’s impact on the game through their kills, multi-kills, damage, etc. Due to how it’s able to measure an individual player’s influence on the game, it will be given the highest weightage of 50%. KDR stands for Kill-Death Ratio and it can be used to indicate how many kills a player can get while staying alive in that round. Hence, it’s a good indicator of how well a player can create a numerical advantage (against enemies), which is an important skill to help win rounds. However, since KDR is solely based on killing ability, it fails to take into account how well a player can use their utility and skills to help their team, therefore, it will be given a slightly lower weightage of 30%. Finally, the clutch rate is a measurement of the percentage of clutch situations a player has won. A clutch situation is when a player is the last one left alive from their team. But since clutch situations occur relatively less frequently, it will be given the lowest weightage of 20%. 
+
+Other metrics such as assists per round (APR), first deaths per round (FDPR), etc., will not be considered because these metrics will either be high or low depending on what role a player is playing. For example, initiators play a more supportive role, hence, their APR would be higher than duelists, who have the responsibility of rushing in to get the first kill (higher FDPR). Therefore, we will only use metrics that can indicate a player’s skill level no matter what role they are playing. 
+
+There will be three types of constraints for this MILP project. 
+1. Number of players constraint: The resulting team can only have exactly 5 players. This is because Valorant requires 5 players to play in a team. It is not against the rules to have 6 players (1 player is a substitute), however, in this tournament, there have been no teams that have more than 5 players. Furthermore, since we only want to find the team that can give the highest skill level, we will only consider the 5 players that will be playing the match. The constraint can be written as follows:
+```math
+\sum x_i = 5
+```
+2. Nationality constraint: A team can have at most 2 non-Japanese players. According to tournament rules, an Esports Organization team based in Japan can only have at most 2 non-Japanese players, in other words, at least 3 Japanese players. Among the top 2 teams in this tournament, there is only 1 Korean player on each team, making the data set for this project have a total of 2 Korean players in total. xJapanese is a binary variable that will be 1 if a player’s nationality is Japanese and 0 if a player’s nationality is non-Japanese (i.e., Korean), and hence, the constraint equation can be as follows:
+```math
+\sum x \geq Japanese3
+```
+3. Role constraint: There has to be at least 1 player for each role on the team. Valorant has 4 types of roles: duelist, controller, sentinel, and initiator. Usually, team compositions will need to have at least 1 player for each unique role, and the last player is free to play any role. Therefore, the role constraint will be represented by 4 constraint equations, where $`x_[role]`$ is a binary variable that is 1 or 0 depending if a player specializes in that role or not.
+```math
+\sum x_duelist \geq 1
+\sum x_controller  \geq 1
+\sum x_sentinel  \geq 1
+\sum x_initiator  \geq 1
+```
