@@ -9,3 +9,8 @@ The aim of this project will thus be to investigate this question using mixed in
 MILP will be used in this project to find the most optimal Valorant team by maximizing an objective function describing a player’s skill levels through three different metrics (ACS, KDR, clutch rate) while satisfying the constraints on players. 
 
 The decision variables will be the set of players that are among the top 2 teams from the recent Valorant tournament in Japan (VCT 2023 Challengers League Japan - Split 1). In total, 10 potential players can be chosen, 5 from each team. The decision variable will be denoted by the binary variable $`x_i`$ , where $`x_i = 1`$ when a player is chosen and $`x_i = 0`$ when a player is not chosen. 
+
+The objective function will be written as follows: 
+```math
+z = 0.5 * ACS + 0.3 * KDR + 0.2 * clutch rate
+```
