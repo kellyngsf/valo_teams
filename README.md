@@ -25,12 +25,14 @@ There will be three types of constraints for this MILP project.
 ```
 2. Nationality constraint: A team can have at most 2 non-Japanese players. According to tournament rules, an Esports Organization team based in Japan can only have at most 2 non-Japanese players, in other words, at least 3 Japanese players. Among the top 2 teams in this tournament, there is only 1 Korean player on each team, making the data set for this project have a total of 2 Korean players in total. xJapanese is a binary variable that will be 1 if a player’s nationality is Japanese and 0 if a player’s nationality is non-Japanese (i.e., Korean), and hence, the constraint equation can be as follows:
 ```math
-\sum x \geq Japanese3
+\sum x_Japanese \geq 3
 ```
 3. Role constraint: There has to be at least 1 player for each role on the team. Valorant has 4 types of roles: duelist, controller, sentinel, and initiator. Usually, team compositions will need to have at least 1 player for each unique role, and the last player is free to play any role. Therefore, the role constraint will be represented by 4 constraint equations, where $`x_[role]`$ is a binary variable that is 1 or 0 depending if a player specializes in that role or not.
 ```math
-\sum x_duelist \geq 1
-\sum x_controller  \geq 1
-\sum x_sentinel  \geq 1
-\sum x_initiator  \geq 1
+\displaylines{
+\sum x_duelist \geq 1 \\
+\sum x_controller  \geq 1 \\
+\sum x_sentinel  \geq 1 \\
+\sum x_initiator  \geq 1 \\
+}
 ```
