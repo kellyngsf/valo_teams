@@ -36,3 +36,25 @@ There will be three types of constraints for this MILP project.
 \sum x_{initiator}  \geq 1 \\
 }
 ```
+
+## MILP Assumptions 
+One assumption of the MILP is that the decision variables (i.e., each of the 10 players) are independent of each other. The selection of one variable/player will not influence the value of another variable/player. This is because each player is different from the other, and it will be assumed that they don’t have to rely on other players to increase or decrease their skill levels because it has originated from their skills which they have practised and honed for the tournament. 
+
+Another assumption is that the variables of the objective function and constraints can be represented through a linear relationship through a straight line. This is because the relationships between variables in the objective function and constraints have a linear relationship with each other. This is a necessary assumption as we are working with a MILP problem to maximize the highest skill level of a Valorant team. 
+
+Furthermore, since MILP can take integers in addition to continuous variables, an assumption is that when binary variables are used in this project, they must only take in whole numbers that are inside the specified bounds of the variable (i.e., 1 or 0). 
+
+## Project-Specific Assumptions 
+One assumption that is specific to this project is that the level of Japanese communication the Koreans can use to communicate during a match is the same. Since there are only 2 Korean players among the top 2 teams, it will be assumed that their level of communication is the same. This is necessary because if a player is unable to speak Japanese, it could severely impact a team’s teamwork if they fail to communicate with each other. Furthermore, it is unknown exactly how good each Korean’s Japanese skill is as viewers are not able to hear their in-game voice chat. Hence, it will be assumed that their Japanese communication skills are at the same level. 
+
+Another assumption originates from the role constraint, which is that the team composition for this project will be 1 player for each of the 4 unique roles, and the last player can be from any role. To solve this problem, we will assume the same team composition to be selected for every map. This is because, in reality, teams may choose to change their composition to optimize their team strategy for a specific map or match up against a specific team. For instance, in recent international tournaments, teams have slowly started coming up with new team compositions that don’t have any duelist, and instead have 2 controllers, 2 sentinels, and 1 initiator. However, since team compositions also depend on the current meta of the game, this project will assume and use a fixed team composition that has been the most standard and commonly used in professional Valorant history. 
+
+The final assumption is that every player specializes in only one role. This follows that the data collected will record a player’s most-played role (in tournament matches) and the role they are most known for in terms of the use of utility in that role. This is assumed because some players may play a duelist role for a particular map, but for another map, they may go for a sentinel role, for example. The reason behind this is related to the previous assumption, as some teams may prefer different team compositions for different scenarios. But for this project, we will only consider the role they play most often, as it is a greater indicator of their skill level and strength of that role. 
+
+## Data Collection
+The data for a player’s ACS, KDR, clutch rate, nationality, and specialized role will be collected through the website vlr.gg (https://www.vlr.gg/event/stats/1432/challengers-league-japan-split-1), which has the statistics for all players and an average for each metric from the entire tournament. The value for each metric will be collected as an average from all their matches in the tournament. 
+
+After collecting all the data, it has been recorded in an Excel spreadsheet as shown below,
+<p align="center">
+  <img src="https://github.com/kellyngsf/valo_teams/blob/main/images/data_snapshot.png" width=450>
+</p>
