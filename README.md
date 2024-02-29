@@ -60,6 +60,8 @@ After collecting all the data, it has been recorded in an Excel spreadsheet as s
 </p>
 
 ## Analysis 
+For easy access to valo_teams.html (coded in R), click on this link: https://kellyngsf.github.io/valo_teams/valo_teams.html.
+
 After collecting the data, the package “lpSolve” in R was used to analyse the data set. Firstly, the objective function was defined with the relative weights as discussed earlier. 
 ```
 objective_function_coefficients <- c(data$ACS * 0.5 + data$KDR * 0.3 + data$clutch_rate * 0.2)
